@@ -260,6 +260,9 @@ gpg --armor --encrypt --recipient <THEIR_EMAIL> secret.txt
 [source,shell]
 ----
 gpg --armor --detach-sign release.zip
+----
+
+----
 gpg --verify release.zip.asc release.zip
 ----
 
