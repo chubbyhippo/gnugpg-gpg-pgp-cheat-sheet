@@ -104,6 +104,13 @@ gpg --armor --encrypt --recipient <RECIPIENT> file.txt
 gpg --decrypt file.txt.gpg > file.txt
 ----
 
+*Decrypt (write to an output file)*
+
+[source,shell]
+----
+gpg --output file.txt --decrypt file.txt.gpg
+----
+
 *Symmetric encryption (shared passphrase)*
 
 [source,shell]
