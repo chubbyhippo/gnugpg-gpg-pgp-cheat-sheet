@@ -1,1 +1,225 @@
+= GPG Cheat Sheet
+:toc:
+:toclevels: 2
 
+== Basics
+
+*Check GPG + key directories*
+[source,shell]
+----
+gpg --version
+gpgconf --list-dirs
+----
+
+*Create a key (interactive)*
+[source,shell]
+----
+gpg --full-generate-key
+----
+
+*List keys*
+[source,shell]
+----
+gpg --list-keys
+gpg --list-secret-keys
+gpg --list-secret-keys --keyid-format=long
+----
+
+*Show fingerprint (verify identity)*
+[source,shell]
+----
+gpg --fingerprint <KEYID-or-EMAIL>
+----
+
+== Export / Import
+
+*Export public key (share with others)*
+[source,shell]
+----
+gpg --armor --export <KEYID-or-EMAIL> > publickey.asc
+----
+
+*Export secret key (be careful)*
+[source,shell]
+----
+gpg --armor --export-secret-keys <KEYID-or-EMAIL> > secretkey.asc
+----
+
+*Backup full secret key material (recommended for recovery)*
+[source,shell]
+----
+gpg --armor --export-secret-keys --export-options export-backup <KEYID> > secret-backup.asc
+----
+
+*Import keys*
+[source,shell]
+----
+gpg --import publickey.asc
+gpg --import secret-backup.asc
+----
+
+== Encrypt / Decrypt
+
+*Encrypt a file to a recipient (uses recipient public key)*
+[source,shell]
+----
+gpg --encrypt --recipient <RECIPIENT_EMAIL-or-KEYID> file.txt
+----
+
+*Encrypt (ASCII armored output)*
+[source,shell]
+----
+gpg --armor --encrypt --recipient <RECIPIENT> file.txt
+----
+
+*Decrypt*
+[source,shell]
+----
+gpg --decrypt file.txt.gpg > file.txt
+----
+
+*Symmetric encryption (shared passphrase)*
+[source,shell]
+----
+gpg --symmetric file.txt
+----
+
+*Symmetric with explicit algorithms (example)*
+[source,shell]
+----
+gpg --symmetric --cipher-algo AES256 --digest-algo SHA256 file.txt
+----
+
+== Sign / Verify
+
+*Sign (detached signature)*
+[source,shell]
+----
+gpg --detach-sign file.iso
+----
+
+*Sign (ASCII armored detached signature)*
+[source,shell]
+----
+gpg --armor --detach-sign file.iso
+----
+
+*Clear-sign text (inline signature)*
+[source,shell]
+----
+gpg --clear-sign message.txt
+----
+
+*Verify (detached signature)*
+[source,shell]
+----
+gpg --verify file.iso.sig file.iso
+----
+
+*Verify (clear-signed text)*
+[source,shell]
+----
+gpg --verify message.txt.asc
+----
+
+*Encrypt + sign*
+[source,shell]
+----
+gpg --encrypt --sign --recipient <RECIPIENT> file.txt
+----
+
+== Key Maintenance
+
+*Edit a key (set expiry, add UID/subkeys, etc.)*
+[source,shell]
+----
+gpg --edit-key <KEYID>
+----
+
+Common commands inside the interactive prompt (`gpg>`):
+
+* `passwd` (change passphrase)
+* `expire` (set expiry)
+* `adduid` (add identity)
+* `addkey` (add subkey)
+* `revuid` (revoke UID)
+* `save`
+
+*Set trust (local trustdb)*
+[source,shell]
+----
+gpg --edit-key <KEYID>
+----
+
+Then run `trust`, choose a level, then `save`.
+
+== Delete Keys (Careful)
+
+*Delete public key*
+[source,shell]
+----
+gpg --delete-key <KEYID>
+----
+
+*Delete secret key*
+[source,shell]
+----
+gpg --delete-secret-key <KEYID>
+----
+
+== Keyserver (Optional)
+
+NOTE: Many workflows avoid keyservers now; use only if your org/process requires it.
+
+*Search*
+[source,shell]
+----
+gpg --keyserver <KEYSERVER_URL> --search-keys <EMAIL>
+----
+
+*Receive*
+[source,shell]
+----
+gpg --keyserver <KEYSERVER_URL> --recv-keys <KEYID>
+----
+
+*Send*
+[source,shell]
+----
+gpg --keyserver <KEYSERVER_URL> --send-keys <KEYID>
+----
+
+== Inspect / Debug
+
+*Show packets (what's inside an encrypted/signed file)*
+[source,shell]
+----
+gpg --list-packets file.gpg
+----
+
+== Quick Recipes
+
+*Share your public key*
+[source,shell]
+----
+gpg --armor --export <YOUR_EMAIL> > publickey.asc
+----
+
+*Encrypt for someone*
+[source,shell]
+----
+gpg --armor --encrypt --recipient <THEIR_EMAIL> secret.txt
+----
+
+*Sign a release + verify*
+[source,shell]
+----
+gpg --armor --detach-sign release.zip
+gpg --verify release.zip.asc release.zip
+----
+
+== Handy Notes
+
+* Always verify identity via fingerprint (out-of-band).
+* Prefer backing up with `--export-options export-backup`.
+* On Windows, pinentry prompts come from GPG Agent; prompt issues are often agent/pinentry config-related.
