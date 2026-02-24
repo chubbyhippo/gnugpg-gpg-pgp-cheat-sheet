@@ -9,6 +9,10 @@
 [source,shell]
 ----
 gpg --version
+
+----
+
+----
 gpgconf --list-dirs
 ----
 
