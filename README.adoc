@@ -75,6 +75,9 @@ gpg --armor --export-secret-keys --export-options export-backup <KEYID> > secret
 [source,shell]
 ----
 gpg --import publickey.asc
+----
+
+----
 gpg --import secret-backup.asc
 ----
 
